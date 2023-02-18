@@ -18,10 +18,9 @@ pipeline {
             steps {
                 unstash 'jar'
                 sh '''
-                    wget https://raw.githubusercontent.com/dimdimuzun/devops/dev/backend/demo3.service
-                    wget https://raw.githubusercontent.com/dimdimuzun/devops/dev/backend/install-systemd-service.sh
                     chmod 744 ./install-systemd-service.sh
                     ./install-systemd-service.sh
+                    sudo systemctl restart demo3
                 '''
             }
         }
