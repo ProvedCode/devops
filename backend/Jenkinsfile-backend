@@ -18,9 +18,11 @@ pipeline {
             steps {
                 unstash 'jar'
                 sh '''
-                    chmod 744 ./install-systemd-service.sh
-                    ./install-systemd-service.sh
-                    sudo systemctl restart demo3
+                    sudo systemctl stop demo3
+                    cp -f ./demo3.jar ~/demo3.jar
+                    chmod 744 ./backend/install-systemd-service.sh
+                    ./backend/install-systemd-service.sh
+                    sudo systemctl start demo3
                 '''
             }
         }
