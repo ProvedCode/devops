@@ -15,6 +15,7 @@ pipeline {
             steps {
                 sh """
                 cd ReactDeploy
+                npm install
                 yarn build
                 chmod -R 755 ./build/*
                 """
