@@ -8,14 +8,21 @@ pipeline {
                 sh '''
                     chmod 744 ./mvnw
                     ./mvnw clean package
+                    mv ./target/demo3*.jar ./demo3.jar
                 '''
-                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                stash name: 'jar', includes: '*.jar'
             }
         }
         stage('Deploy') {
             agent { label 'java && target' }
             steps {
-                echo 'Reached deploy stage'
+                unstash 'jar'
+                sh '''
+                    wget https://raw.githubusercontent.com/dimdimuzun/devops/dev/backend/demo3.service
+                    wget https://raw.githubusercontent.com/dimdimuzun/devops/dev/backend/install-systemd-service.sh
+                    chmod 744 ./install-systemd-service.sh
+                    ./install-systemd-service.sh
+                '''
             }
         }
     }
