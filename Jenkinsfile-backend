@@ -8,7 +8,7 @@ pipeline {
                     chmod 744 ./mvnw
                     ./mvnw clean package
                 '''
-                archiveArtifacts artifacts: '**/target/*.jar'
+                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
             }
         }
         stage('Deploy') {
