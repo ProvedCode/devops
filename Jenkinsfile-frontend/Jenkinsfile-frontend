@@ -4,8 +4,10 @@ pipeline {
     stages {
         stage('clone') {
             steps {
-                sh("rm -rf ReactDeploy")
-                git branch: 'main', url: 'https://github.com/SvarshikPlaton/ReactDeploy.git'
+                sh """
+                rm -rf ReactDeploy
+                git clone git@github.com:SvarshikPlaton/ReactDeploy.git
+                """
             }
         }
 
@@ -14,17 +16,14 @@ pipeline {
                 sh """
                 cd ReactDeploy
                 yarn build
-                cd build
-                chmod -R 755 ./*
+                chmod -R 755 ./build/*
                 """
             }
         }
 
         stage("deploy") {
             steps {
-                sh """
-                scp -rp ./ReactDeploy/build/* react-app@172.31.31.67:/var/www/react-application/html
-                """
+                sh("scp -rp ./ReactDeploy/build/* react-app@172.31.31.67:/var/www/react-application/html")
             }
         }
 
