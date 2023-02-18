@@ -1,7 +1,9 @@
 # Terraform
 
 1. Create terraform.tfvars file by variables.tf
-    Example:
+    Example 1:
+    * https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
+    Example 2:
     * var_name = "value"
     * var_name_2 = "value2" 
 2. terraform init -> initialize terraform
