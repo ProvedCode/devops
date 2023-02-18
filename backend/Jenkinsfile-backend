@@ -18,7 +18,7 @@ pipeline {
             steps {
                 unstash 'jar'
                 sh '''
-                    sudo systemctl stop demo3
+                    sudo systemctl stop demo3 || true
                     cp -f ./demo3.jar ~/demo3.jar
                     chmod 744 ./backend/install-systemd-service.sh
                     ./backend/install-systemd-service.sh
