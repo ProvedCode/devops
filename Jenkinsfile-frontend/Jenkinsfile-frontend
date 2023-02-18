@@ -32,13 +32,15 @@ pipeline {
         }
 
         stage("upload to s3") {
-            files = findFiles(glob: './ReactDeploy/build/*')
+            steps {
+                files = findFiles(glob: './ReactDeploy/build/*')
 
-            files.each {
-                println "Uploading ${it}"
+                files.each {
+                    println "Uploading ${it}"
 
-                withAWS(credentials: 's3-test', region: 'eu-central-1') {
-                    s3Upload(file: "${it}", bucket: 'test.khai')
+                    withAWS(credentials: 's3-test', region: 'eu-central-1') {
+                        s3Upload(file: "${it}", bucket: 'test.khai')
+                    }
                 }
             }
         }
