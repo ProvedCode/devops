@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'React' }
+    agent { label 'yarn' }
 
     stages {
         stage('clone') {
