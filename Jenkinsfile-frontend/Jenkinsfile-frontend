@@ -36,16 +36,8 @@ pipeline {
                 withAWS(credentials: 's3-test', region: 'eu-central-1') {
                     script {
                         sh("pwd")
-
-                        def artifacts = findFiles(glob: './ReactDeploy/build/*')
-
                         println "Uploading artifacts..."
-
-                        artifacts.each {
-                            println "Uploading ${it}"
-
-                            s3Upload(file: "${it}", bucket: 'test.khai')
-                        }
+                        s3Upload(file: "./ReactDeploy/build", bucket: 'test.khai')
                     }
                 }
             }
