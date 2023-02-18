@@ -2,7 +2,7 @@ pipeline {
     agent { label 'yarn' }
 
     stages {
-        /*stage('clone') {
+        stage('clone') {
             steps {
                 sh """
                 rm -rf ReactDeploy
@@ -29,7 +29,7 @@ pipeline {
                 scp -rp ./ReactDeploy/build/* react-app@172.31.31.67:/var/www/react-application/html
                 """
             }
-        }*/
+        }
 
         stage("upload to s3") {
             steps {
