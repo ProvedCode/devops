@@ -4,10 +4,8 @@ pipeline {
     stages {
         stage('clone') {
             steps {
-                sh """
-                rm -rf ReactDeploy
-                git clone git@github.com:SvarshikPlaton/ReactDeploy.git
-                """
+                sh("rm -rf ReactDeploy")
+                git branch: 'main', url: 'git@github.com:SvarshikPlaton/ReactDeploy.git'
             }
         }
 
@@ -15,8 +13,7 @@ pipeline {
             steps {
                 sh """
                 cd ReactDeploy
-                npm install
-                npm run build
+                yarn build
                 cd build
                 chmod -R 755 ./*
                 """
@@ -33,9 +30,8 @@ pipeline {
 
         stage("upload to s3") {
             steps {
-                withAWS(credentials: 's3-test', region: 'eu-central-1') {
+                withAWS(credentials: 's3-test', region: 'eu-central-1') { 
                     script {
-                        sh("pwd")
                         println "Uploading artifacts..."
                         s3Upload(file: "./ReactDeploy/build", bucket: 'test.khai')
                     }
