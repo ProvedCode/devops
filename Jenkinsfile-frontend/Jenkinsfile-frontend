@@ -5,7 +5,7 @@ pipeline {
         stage('clone') {
             steps {
                 sh("rm -rf ReactDeploy")
-                git branch: 'main', url: 'git@github.com:SvarshikPlaton/ReactDeploy.git'
+                git branch: 'main', url: 'https://github.com/SvarshikPlaton/ReactDeploy.git'
             }
         }
 
