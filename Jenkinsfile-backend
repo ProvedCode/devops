@@ -1,6 +1,6 @@
 pipeline {
-    agent { label 'java' }
     stages {
+        agent { label 'java' && 'jdk' }
         stage('Build') {
             steps {
                 git branch: 'main', url: 'https://github.com/AButrym/jwt-security-config'
@@ -11,6 +11,7 @@ pipeline {
                 archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
             }
         }
+        agent { label 'java' && 'target' }
         stage('Deploy') {
             steps {
                 echo 'Reached deploy stage'
