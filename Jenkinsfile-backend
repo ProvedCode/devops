@@ -2,7 +2,7 @@ pipeline {
     agent none
     stages {
         stage('Build') {
-            agent { label 'java' && 'jdk' }
+            agent { label 'java && jdk' }
             steps {
                 git branch: 'main', url: 'https://github.com/AButrym/jwt-security-config'
                 sh '''
@@ -13,7 +13,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent { label 'java' && 'target' }
+            agent { label 'java && target' }
             steps {
                 echo 'Reached deploy stage'
             }
