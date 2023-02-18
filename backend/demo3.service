@@ -1,0 +1,14 @@
+[Unit]
+Description=demo3 systemd service
+DefaultDependencies=no
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=java -jar /var/lib/demo3/demo3.jar
+TimeoutStartSec=0
+RemainAfterExit=yes
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
