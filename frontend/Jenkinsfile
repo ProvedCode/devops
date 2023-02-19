@@ -30,7 +30,7 @@ pipeline {
             post {
                 success {
                     echo 'Now Archiving...'
-                    archiveArtifacts artifacts: '**/build/*' fingerprint: true
+                    archiveArtifacts artifacts: '**/build/*', fingerprint: true
                 }
             }
         }
