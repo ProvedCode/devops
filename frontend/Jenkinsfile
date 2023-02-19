@@ -27,6 +27,12 @@ pipeline {
                 chmod -R 755 ./build/*
                 """
             }
+            post {
+                success {
+                    echo 'Now Archiving...'
+                    archiveArtifacts artifacts: '**/build/*'
+                }
+            }
         }
         stage("deploy") {
             steps {
@@ -46,17 +52,15 @@ pipeline {
     } 
     post {
         always {
-            when {
-                expression {
-                    params.ALLOW_MESSAGE == true
+            script {
+                if (ALLOW_MESSAGE) {
+                    discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
+                    link: env.BUILD_URL,
+                    result: currentBuild.currentResult,
+                    title: JOB_NAME,
+                    webhookURL: "${WEBHOOK_URL}"
                 }
             }
-            discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
-            link: env.BUILD_URL,
-            result: currentBuild.currentResult,
-            title: JOB_NAME,
-            webhookURL: "${WEBHOOK_URL}"
-
         }
     }  
 }
