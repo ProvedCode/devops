@@ -47,7 +47,7 @@ pipeline {
     post {
         always {
             script {
-                if (ALLOW_MESSAGE) {
+                if (params.ALLOW_MESSAGE) {
                     discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
