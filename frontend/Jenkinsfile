@@ -27,12 +27,6 @@ pipeline {
                 chmod -R 755 ./build/*
                 """
             }
-            post {
-                success {
-                    echo 'Now Archiving...'
-                    archiveArtifacts artifacts: '**/build/*', fingerprint: true
-                }
-            }
         }
         stage("deploy") {
             steps {
