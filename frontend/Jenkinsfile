@@ -46,12 +46,16 @@ pipeline {
 
     post {
         always {
+
+            echo("${currentBuild.currentResult}")
+
             discordSend description: "Jenkins Pipeline Build",
              footer: "Footer Text",
               link: env.BUILD_URL,
                result: currentBuild.currentResult,
                 title: JOB_NAME,
                  webhookURL: "${WebhookURL}"
+
         }
     }  
 }
