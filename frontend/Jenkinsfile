@@ -4,11 +4,6 @@ pipeline {
         SERVER_CREDENTIALS = "s3-test"
         WEBHOOK_URL = "https://discord.com/api/webhooks/1076817137320079390/pT9byWIX3_MR1mdqa19a2H2gHAHX7xFtQfpOMluj7VHf7PKt0s4uIIHE0qNcwZHPROe6"
     }
-    parameters{
-        booleanParam(name: "ALLOW_MESSAGE",
-        defaultValue: false,
-        description: "Get success and fail messages about your build in Discord")
-    }
     stages {
         stage('clone') {
             steps {
@@ -46,14 +41,11 @@ pipeline {
     } 
     post {
         always {
-            script {
-                if (params.ALLOW_MESSAGE) {
-                    discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
-                    link: env.BUILD_URL,
-                    result: currentBuild.currentResult,
-                    title: JOB_NAME,
-                    webhookURL: "${WEBHOOK_URL}"
-                }
+                discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
+                link: env.BUILD_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: "${WEBHOOK_URL}"
             }
         }
     }  
