@@ -8,17 +8,9 @@ sudo apt install jenkins -y
 sudo ufw allow OpenSSH
 sudo ufw enable
 sudo ufw allow 8080
-java -Djenkins.install.runSetupWizard=false -jar jenkins.war
 
-echo "JAVA_ARGS=Djenkins.install.runSetupWizard=false" >> /etc/default/jenkins
-touch /var/lib/jenkins/init.groovy.d/basic-security.groovy
+export JENKINS_PASSWD="$(sudo cat /var/lib/jenkins/secrets/initialAdminPassword)"
+wget http://localhost:8080/jnlpJars/jenkins-cli.jar
+chmod u+x jenkins-cli.jar
+java -jar jenkins-cli.jar -s http://localhost:8080/ -auth admin:$JENKINS_PASSWD install-plugin workflow-aggregator -restart
 
-echo "#!groovy" >> /var/lib/jenkins/init.groovy.d/basic-security.groovy
-echo "import jenkins.model.*" >> /var/lib/jenkins/init.groovy.d/basic-security.groovy
-echo "import hudson.util.*;" >> /var/lib/jenkins/init.groovy.d/basic-security.groovy
-echo "import jenkins.install.*;" >> /var/lib/jenkins/init.groovy.d/basic-security.groovy
-echo "def instance = Jenkins.getInstance()" >> /var/lib/jenkins/init.groovy.d/basic-security.groovy
-echo "instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)" >> /var/lib/jenkins/init.groovy.d/basic-security.groovy
-
-# sudo systemctl restart jenkins
-# sudo rm -rf /var/lib/jenkins/init.groovy.d/basic-security.groovy

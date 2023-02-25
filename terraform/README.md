@@ -10,3 +10,5 @@
 4. terraform apply -> create infrastructure by your terraform code
 5. terraform destroy -> destroy all infrastructure
  
+If you want using ssh key pair for your instance - add terraform.tfvars in ec2 directory with <aws_instance_default_ssh_key_name> variable
+
