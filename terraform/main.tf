@@ -6,9 +6,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "ita-duallight-project"
-    key    = "main/terraform.tfstate"
-    region = "eu-central-1"
+    bucket         = "ita-duallight-project"
+    key            = "main/terraform.tfstate"
+    region         = "eu-central-1"
+    dynamodb_table = "ita-duallight-project-terraform-state"
   }
 }
 
@@ -21,6 +22,6 @@ module "sg" {
 }
 
 module "ec2" {
-  source = "./modules/ec2"
+  source        = "./modules/ec2"
   default_sg_id = module.sg.default_sg_id
 }
