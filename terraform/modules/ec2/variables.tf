@@ -7,7 +7,7 @@ variable "instance_type" {
 variable "aws_instance_default_ssh_key_name" {
   description = "Name of aws key pair"
   type        = string
-  default     = ""
+  default     = "key31012023" // TODO :: replace to .tfvars file
 }
 
 variable "default_sg_id" {}
