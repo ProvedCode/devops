@@ -1,0 +1,38 @@
+#!/bin/bash
+
+apt-get update
+wget http://security.debian.org/debian-security/pool/updates/main/o/openjdk-8/openjdk-8-jre-headless_8u332-ga-1~deb9u1_amd64.deb -O jre-8-headless.deb
+wget http://security.debian.org/debian-security/pool/updates/main/o/openjdk-8/openjdk-8-jre_8u332-ga-1~deb9u1_amd64.deb -O jre-8.deb
+apt-get install ./jre-8-headless.jar -y
+apt-get install ./jre-8.jar -y
+rm ./jre-8-headless.deb ./jre-8.deb
+wget https://download.sonatype.com/nexus/3/nexus-3.48.0-01-unix.tar.gz -O nexus-3.tar.gz
+tar xpf nexus-3.tar.gz
+mkdir /opt/nexus
+mv ./nexus*/* /opt/nexus
+mv ./sonatype-work /opt/
+ln -s /opt/nexus/bin/nexus /etc/init.d/nexus
+
+cat <<EOT >> nexus.service
+[Unit]
+Description=nexus service
+After=network.target
+  
+[Service]
+Type=forking
+LimitNOFILE=65536
+ExecStart=/etc/init.d/nexus start
+ExecStop=/etc/init.d/nexus stop 
+User=nexus
+Restart=on-abort
+TimeoutSec=600
+  
+[Install]
+WantedBy=multi-user.target
+EOT
+
+systemctl daemon-reload
+mkdir /var/lib/nexus
+useradd -m /var/lib/nexus -s /bin/bash nexus
+chown nexus:nexus -R /var/lib/nexus /opt/nexus /opt/sonatype-work
+sudo systemctl enable nexus.service --now
