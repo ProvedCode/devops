@@ -33,8 +33,7 @@ EOT
 
 mv ./nexus.service /etc/systemd/system/nexus.service
 systemctl daemon-reload
-mkdir /var/lib/nexus
-useradd -m /var/lib/nexus -s /bin/bash nexus
+useradd -M -s /bin/bash nexus
 chown nexus:nexus -R /var/lib/nexus /opt/nexus /opt/sonatype-work
 systemctl enable nexus.service --now
 rm -rf ./nexus-3*
