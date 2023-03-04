@@ -35,5 +35,8 @@ mv ./nexus.service /etc/systemd/system/nexus.service
 systemctl daemon-reload
 useradd -M -s /bin/bash nexus
 chown nexus:nexus -R /var/lib/nexus /opt/nexus /opt/sonatype-work
+rm /opt/nexus/bin/nexus.rc
+touch /opt/nexus/bin/nexus.rc
+echo "run_as_user=\"nexus\"" >> /opt/nexus/bin/nexus.rc
 systemctl enable nexus.service --now
 rm -rf ./nexus-3*
