@@ -35,4 +35,4 @@ systemctl daemon-reload
 mkdir /var/lib/nexus
 useradd -m /var/lib/nexus -s /bin/bash nexus
 chown nexus:nexus -R /var/lib/nexus /opt/nexus /opt/sonatype-work
-sudo systemctl enable nexus.service --now
+systemctl enable nexus.service --now
