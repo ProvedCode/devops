@@ -17,8 +17,8 @@ sudo ufw allow 8080
 
 # Configure jenkins:
 export JENKINS_PASSWD="$(sudo cat /var/lib/jenkins/secrets/initialAdminPassword)"
-wget http://localhost:8080/jnlpJars/jenkins-cli.jar
-chmod u+x jenkins-cli.jar
+sudo wget http://localhost:8080/jnlpJars/jenkins-cli.jar
+sudo chmod u+x jenkins-cli.jar
 
 # Install base jenkins plugins:
 java -jar jenkins-cli.jar -s http://localhost:8080/ -auth admin:$JENKINS_PASSWD install-plugin workflow-aggregator
@@ -37,4 +37,4 @@ sudo git clone https://github.com/dimdimuzun/devops.git -b dev # TODO :: checkou
 
 # Create jenkins frontend job by jenkinsfile:
 # THIS IS TEST!!! # TODO :: fix for frontend
-java -jar jenkins-cli.jar -s http://localhost:8080/ -auth admin:$JENKINS_PASSWD create-job test_pipeline < ./devops/backend/test-pipeline.xml
+sudo java -jar jenkins-cli.jar -s http://localhost:8080/ -auth admin:$JENKINS_PASSWD create-job test_pipeline < /devops/backend/test-pipeline.xml
