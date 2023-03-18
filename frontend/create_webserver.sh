@@ -27,7 +27,8 @@ then
     iptables -I INPUT -p tcp --dport 22 -j ACCEPT
 fi
 
-echo "" > /etc/nginx/sites-available/sites.conf
+mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak
+echo "" > /etc/nginx/conf.d/sites.conf
 
 for (( i=0; i<${#SITES[@]}; i++ ))
 do
@@ -39,7 +40,7 @@ then
     iptables -I INPUT -p tcp --dport ${PORTS[$i]} -j ACCEPT
 fi
 
-cat >> /etc/nginx/sites-available/sites.conf << EOF
+cat >> /etc/nginx/conf.d/sites.conf << EOF
 server {
     listen ${PORTS[$i]};
 
@@ -55,9 +56,9 @@ EOF
 done
 
 
-if [ ! -f /etc/nginx/sites-enabled/sites.conf ]; then
-    ln -s /etc/nginx/sites-available/sites.conf /etc/nginx/sites-enabled/sites.conf
-fi
+# if [ ! -f /etc/nginx/sites-enabled/sites.conf ]; then
+#    ln -s /etc/nginx/sites-available/sites.conf /etc/nginx/sites-enabled/sites.conf
+# fi
 
 if [[ "ON_AWS" != "y" ]]
 then
