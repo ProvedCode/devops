@@ -3,6 +3,9 @@
 IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 SITES=(site1.com    site2.com   site3.com   site4.com   site5.com)
 PORTS=(8081         8082        8083        8084        8085)
+ON_AWS="n"
+
+read -p "Are you running this script on AWS (y/N): " ON_AWS
 
 apt update
 apt install curl gnupg2 ca-certificates lsb-release debian-archive-keyring -y
@@ -12,14 +15,17 @@ apt update
 apt install nginx
 systemctl status nginx
 
-apt install iptables-persistent
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT ACCEPT
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A OUTPUT -o lo -j ACCEPT
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+if [ "$ON_AWS" != "y" ]
+do
+    apt install iptables-persistent
+    iptables -P INPUT DROP
+    iptables -P FORWARD DROP
+    iptables -P OUTPUT ACCEPT
+    iptables -A INPUT -i lo -j ACCEPT
+    iptables -A OUTPUT -o lo -j ACCEPT
+    iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+    iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+fi
 
 echo "" > /etc/nginx/sites-available/sites.conf
 
@@ -27,7 +33,11 @@ for (( i=0; i<${#SITES[@]}; i++ ))
 do
 mkdir -p /var/www/${SITES[$i]}/html
 echo "Site $(( $i + 1 ))" > /var/www/${SITES[$i]}/html/index.html
-iptables -I INPUT -p tcp --dport ${PORTS[$i]} -j ACCEPT
+
+if [ "ON_AWS" != "y" ]
+do
+    iptables -I INPUT -p tcp --dport ${PORTS[$i]} -j ACCEPT
+fi
 
 cat >> /etc/nginx/sites-available/sites.conf << EOF
 server {
@@ -49,7 +59,10 @@ if [ ! -f /etc/nginx/sites-enabled/sites.conf ]; then
     ln -s /etc/nginx/sites-available/sites.conf /etc/nginx/sites-enabled/sites.conf
 fi
 
-iptables-save > /etc/iptables/rules.v4
+if [ "ON_AWS" != "y" ]
+do
+    iptables-save > /etc/iptables/rules.v4
+fi
 
 nginx -t
 service nginx reload
