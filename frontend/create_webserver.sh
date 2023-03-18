@@ -14,7 +14,7 @@ apt update
 apt install nginx
 systemctl status nginx
 
-if [[ "ON_AWS" != "y" ]]
+if [ "$ON_AWS" != "y" ]
 then
     apt install iptables-persistent -y
     iptables -P INPUT DROP
@@ -34,7 +34,7 @@ do
 mkdir -p /var/www/${SITES[$i]}/html
 echo "Site $(( $i + 1 ))" > /var/www/${SITES[$i]}/html/index.html
 
-if [[ "ON_AWS" != "y" ]]
+if [ "$ON_AWS" != "y" ]
 then
     iptables -I INPUT -p tcp --dport ${PORTS[$i]} -j ACCEPT
 fi
@@ -58,7 +58,7 @@ done
 #    ln -s /etc/nginx/sites-available/sites.conf /etc/nginx/sites-enabled/sites.conf
 # fi
 
-if [[ "ON_AWS" != "y" ]]
+if [ "$ON_AWS" != "y" ]
 then
     iptables-save > /etc/iptables/rules.v4
 fi
