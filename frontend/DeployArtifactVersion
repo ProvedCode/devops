@@ -1,0 +1,40 @@
+pipeline {
+    agent { label 'node.js' }
+    environment {
+        SERVER_CREDENTIALS = 's3-test'
+        WEBHOOK_URL = 'DiscordWebHook'
+        BUCKET = 'test.khai'
+    }
+    parameters {
+        string(name: 'BUILD_NUMBER', description: 'Deploy build number')
+    }
+    stages {
+        stage('download file') {
+            steps {
+                script {
+                    withAWS(credentials: SERVER_CREDENTIALS, region: 'eu-central-1') {
+                        s3Download(bucket: BUCKET,
+                            file: "./build_archive/build-${BUILD_NUMBER}.tar.gz",
+                            path: "build-${BUILD_NUMBER}.tar.gz")
+                    }
+                }
+            }
+        }
+        stage('clear old artifacts and deploy') {
+            steps {
+                sh '''
+                    tar -xvf "./build_archive/build-${BUILD_NUMBER}.tar.gz" -C ./build_archive/
+                    rm -f ./build_archive/build-${BUILD_NUMBER}.tar.gz
+                    ssh react-app@172.31.31.67 "rm -rf /var/www/react-application/html/*"
+                    scp -rp ./build_archive/* react-app@172.31.31.67:/var/www/react-application/html
+                '''
+            }
+        } 
+    }
+    post {
+        always {
+            println 'clear workspace' 
+            sh("rm -rf ./build_archive")
+        }
+    }
+}
