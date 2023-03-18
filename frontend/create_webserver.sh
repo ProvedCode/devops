@@ -16,7 +16,7 @@ systemctl status nginx
 
 if [[ "ON_AWS" != "y" ]]
 then
-    apt install iptables-persistent
+    apt install iptables-persistent -y
     iptables -P INPUT DROP
     iptables -P FORWARD DROP
     iptables -P OUTPUT ACCEPT
