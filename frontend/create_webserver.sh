@@ -54,7 +54,6 @@ server {
 EOF
 done
 
-
 # if [ ! -f /etc/nginx/sites-enabled/sites.conf ]; then
 #    ln -s /etc/nginx/sites-available/sites.conf /etc/nginx/sites-enabled/sites.conf
 # fi
