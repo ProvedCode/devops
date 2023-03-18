@@ -3,7 +3,6 @@
 IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 SITES=(site1.com    site2.com   site3.com   site4.com   site5.com)
 PORTS=(8081         8082        8083        8084        8085)
-ON_AWS="n"
 
 read -p "Are you running this script on AWS (y/N): " ON_AWS
 
