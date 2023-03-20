@@ -1,5 +1,11 @@
 pipeline {
     agent none
+    environment {
+        SERVER_CREDENTIALS = 'creds'
+        WEBHOOK_URL = credentials('')
+        BUCKET = 'artifacts-s3'
+        REGION = 'eu-central-1'
+    }
     stages {
         stage('Build') {
             agent { label 'java && jdk' }
@@ -10,19 +16,17 @@ pipeline {
                     ./mvnw clean package
                     mv ./target/demo3*.jar ./demo3.jar
                 '''
-                stash name: 'jar', includes: '*.jar'
+                withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
+                    s3Upload(file: './demo3.jar', bucket: '${BUCKET}')
+                }
             }
         }
         stage('Deploy') {
             agent { label 'java && target' }
             steps {
-                unstash 'jar'
                 sh '''
-                    sudo systemctl stop demo3 || true
-                    cp -f ./demo3.jar ~/demo3.jar
-                    chmod 744 ./backend/install-systemd-service.sh
-                    ./backend/install-systemd-service.sh
-                    sudo systemctl start demo3
+                    chmod 755 ./demo3.jar
+                    java -jar ./demo3.jar &
                 '''
             }
         }
