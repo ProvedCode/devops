@@ -15,17 +15,23 @@ pipeline {
                     chmod 744 ./mvnw
                     ./mvnw clean package
                     mv ./target/demo3*.jar ./demo3.jar
+                    tar -cvzf demo3-${BUILD_NUMBER}.tar.gz ./demo3.jar
                 '''
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Upload(file: './demo3.jar', bucket: '${BUCKET}')
+                    s3Upload(file: 'demo3-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}')
                 }
             }
         }
         stage('Deploy') {
             agent { label 'java && target' }
             steps {
+                withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
+                    s3Download(file:'demo3-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'demo3-${BUILD_NUMBER}.tar.gz')
+                }
                 sh '''
+                    tar xpvf demo3-${BUILD_NUMBER}.tar.gz
                     chmod 755 ./demo3.jar
+                    rm demo3-${BUILD_NUMBER}.tar.gz
                     java -jar ./demo3.jar &
                 '''
             }
