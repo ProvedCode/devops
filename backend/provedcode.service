@@ -1,11 +1,11 @@
 [Unit]
-Description=demo3 systemd service
+Description=ProvedCode systemd service
 DefaultDependencies=no
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=java -jar /var/lib/demo3/demo3.jar
+ExecStart=java -jar /var/lib/jenkins/provedcode.jar
 TimeoutStartSec=0
 RemainAfterExit=yes
 Restart=on-failure
