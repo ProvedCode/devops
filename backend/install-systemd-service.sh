@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [ -f /etc/systemd/system/demo3.service ]; then
+if [ -f /etc/systemd/system/provedcode.service ]; then
     echo "systemd unit already installed!"
 else
-    sudo cp ./backend/demo3.service /etc/systemd/system/demo3.service
+    sudo cp ./backend/provedcode.service /etc/systemd/system/provedcode.service
     sudo systemctl daemon-reload
     echo "systemd unit installed!"
 fi

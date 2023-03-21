@@ -14,11 +14,11 @@ pipeline {
                 sh '''
                     chmod 744 ./mvnw
                     ./mvnw clean package
-                    mv ./target/demo3*.jar ./demo3.jar
-                    tar -cvzf demo3-${BUILD_NUMBER}.tar.gz ./demo3.jar
+                    mv ./target/provedcode*.jar ./provedcode.jar
+                    tar -cvzf provedcode-${BUILD_NUMBER}.tar.gz ./provedcode.jar
                 '''
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Upload(file: 'demo3-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}')
+                    s3Upload(file: 'provedcode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}')
                 }
             }
         }
@@ -26,13 +26,17 @@ pipeline {
             agent { label 'java && target' }
             steps {
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Download(file:'demo3-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'demo3-${BUILD_NUMBER}.tar.gz')
+                    s3Download(file:'provedcode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'provedcode-${BUILD_NUMBER}.tar.gz')
                 }
                 sh '''
-                    tar xpvf demo3-${BUILD_NUMBER}.tar.gz
-                    chmod 755 ./demo3.jar
-                    rm demo3-${BUILD_NUMBER}.tar.gz
-                    java -jar ./demo3.jar &
+                    sudo systemctl stop provedcode || true
+                    chmod 755 ./backend/install-systemd-service.sh
+                    ./backend/install-systemd-service.sh
+                    tar xpvf provedcode-${BUILD_NUMBER}.tar.gz
+                    mv -f ./provedcode.jar ~/provedcode.jar
+                    chmod 755 ~/provedcode.jar
+                    rm provedcode-${BUILD_NUMBER}.tar.gz
+                    sudo systemctl start provedcode
                 '''
             }
         }
