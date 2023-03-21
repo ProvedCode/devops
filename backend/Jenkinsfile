@@ -10,7 +10,7 @@ pipeline {
         stage('Build') {
             agent { label 'java && jdk' }
             steps {
-                git branch: 'main', url: 'https://github.com/AButrym/jwt-security-config'
+                git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh '''
                     chmod 744 ./mvnw
                     ./mvnw clean package
