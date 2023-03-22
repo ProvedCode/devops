@@ -43,14 +43,14 @@ pipeline {
             }
         }
     }
-    post {
+    /*post {
         always {
-            discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
+            discordSend description: "Backend build status: ${currentBuild.currentResult}",
                 link: env.BUILD_URL,
                 result: currentBuild.currentResult,
                 title: JOB_NAME,
                 webhookURL: "${env.WEBHOOK_URL}"
             echo "${env.WEBHOOK_URL}"
         }
-    }
+    }*/
 }
