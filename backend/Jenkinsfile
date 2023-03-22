@@ -23,7 +23,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent { label 'java && target' }
+            agent { label 'java && target && Team-Dmytro' }
             steps {
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
                     s3Download(file:'provedcode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'provedcode-${BUILD_NUMBER}.tar.gz')
