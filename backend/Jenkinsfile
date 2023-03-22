@@ -14,11 +14,11 @@ pipeline {
                 sh '''
                     chmod 744 ./mvnw
                     ./mvnw clean package
-                    mv ./target/provedcode*.jar ./provedcode.jar
-                    tar -cvzf provedcode-${BUILD_NUMBER}.tar.gz ./provedcode.jar
+                    mv ./target/ProvedCode*.jar ./ProvedCode.jar
+                    tar -cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./ProvedCode.jar
                 '''
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Upload(file: 'provedcode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
+                    s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
                 }
             }
         }
@@ -26,17 +26,17 @@ pipeline {
             agent { label 'java && target && Team-Dmytro' }
             steps {
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Download(file:'provedcode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'backend/')
+                    s3Download(file:'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'backend/')
                 }
                 sh '''
-                    sudo systemctl stop provedcode || true
+                    sudo systemctl stop ProvedCode || true
                     chmod 755 ./backend/install-systemd-service.sh
                     ./backend/install-systemd-service.sh
-                    tar xpvf provedcode-${BUILD_NUMBER}.tar.gz
-                    mv -f ./provedcode.jar ~/provedcode.jar
-                    chmod 755 ~/provedcode.jar
-                    rm provedcode-${BUILD_NUMBER}.tar.gz
-                    sudo systemctl start provedcode
+                    tar xpvf ProvedCode-${BUILD_NUMBER}.tar.gz
+                    mv -f ./ProvedCode.jar ~/ProvedCode.jar
+                    chmod 755 ~/ProvedCode.jar
+                    rm ProvedCode-${BUILD_NUMBER}.tar.gz
+                    sudo systemctl start ProvedCode
                 '''
             }
         }
