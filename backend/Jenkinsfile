@@ -1,9 +1,9 @@
 pipeline {
     agent none
     environment {
-        SERVER_CREDENTIALS = 'creds'
+        SERVER_CREDENTIALS = 's3-access'
         WEBHOOK_URL = credentials('')
-        BUCKET = 'artifacts-s3'
+        BUCKET = 'dmytro-team-bucket'
         REGION = 'eu-central-1'
     }
     stages {
@@ -18,7 +18,7 @@ pipeline {
                     tar -cvzf provedcode-${BUILD_NUMBER}.tar.gz ./provedcode.jar
                 '''
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Upload(file: 'provedcode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}')
+                    s3Upload(file: 'provedcode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
                 }
             }
         }
@@ -26,7 +26,7 @@ pipeline {
             agent { label 'java && target && Team-Dmytro' }
             steps {
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Download(file:'provedcode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'provedcode-${BUILD_NUMBER}.tar.gz')
+                    s3Download(file:'provedcode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'backend/')
                 }
                 sh '''
                     sudo systemctl stop provedcode || true
@@ -39,6 +39,16 @@ pipeline {
                     sudo systemctl start provedcode
                 '''
             }
+        }
+    }
+    post {
+        always {
+            discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
+                link: env.BUILD_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: "${env.WEBHOOK_URL}"
+            echo "${env.WEBHOOK_URL}"
         }
     }
 }
