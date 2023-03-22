@@ -12,6 +12,7 @@ pipeline {
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh '''
+                    export JAVA_HOME="/lib/jvm/jdk-17"
                     chmod 744 ./mvnw
                     ./mvnw clean package
                     mv ./target/ProvedCode*.jar ./ProvedCode.jar
