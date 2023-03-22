@@ -2,7 +2,7 @@ pipeline {
     agent none
     environment {
         SERVER_CREDENTIALS = 's3-access'
-        WEBHOOK_URL = credentials('')
+        WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         REGION = 'eu-central-1'
     }
