@@ -15,12 +15,11 @@ pipeline {
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     chmod 744 ./mvnw
                     ./mvnw clean package
-                    mv ./target/demo*.jar ./demo.jar
-                    tar cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./demo.jar
+                    mv ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar
                 '''
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Upload(file: "ProvedCode-${BUILD_NUMBER}.tar.gz", bucket: "${BUCKET}", path:"backend/")
+                        s3Upload(file: "./demo-${BUILD_NUMBER}.jar", bucket: "${BUCKET}", path:"backend/")
                     }
                 }
                 sh 'rm ./demo.jar ./ProvedCode-${BUILD_NUMBER}.tar.gz'
@@ -31,17 +30,14 @@ pipeline {
             steps {
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Download(file:"ProvedCode-${BUILD_NUMBER}.tar.gz", bucket:"${BUCKET}", path:"backend/")
+                        s3Download(file:"./demo-${BUILD_NUMBER}.jar", bucket:"${BUCKET}", path:"backend/")
                     }
                 }
                 sh '''
                     sudo systemctl stop ProvedCode || true
                     chmod 755 ./backend/install-systemd-service.sh
                     ./backend/install-systemd-service.sh
-                    tar xpvf ProvedCode-${BUILD_NUMBER}.tar.gz
-                    mv -f ./demo.jar ~/demo.jar
-                    chmod 755 ~/demo.jar
-                    rm ProvedCode-${BUILD_NUMBER}.tar.gz
+                    mv -f ./demo-${BUILD_NUMBER}.jar ~/demo.jar
                     sudo systemctl start ProvedCode
                 '''
             }
