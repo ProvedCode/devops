@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
     environment {
         SERVER_CREDENTIALS = 's3-access'
         WEBHOOK_URL = credentials('DiscordWebhookDT')
