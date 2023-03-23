@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'java && jdk' }
+    agent none
     environment {
         SERVER_CREDENTIALS = 's3-access'
         WEBHOOK_URL = credentials('DiscordWebhookDT')
@@ -8,19 +8,20 @@ pipeline {
     }
     stages {
         stage('Build') {
+            agent { label 'java && jdk' }
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     chmod 744 ./mvnw
                     ./mvnw clean package
-                    mv ./target/ProvedCode*.jar ./ProvedCode.jar
-                    tar -cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./ProvedCode.jar
+                    mv ./target/demo*.jar ./demo.jar
+                    tar -cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./demo.jar
                 '''
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
                     s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
                 }
-                sh 'rm ./ProvedCode.jar ./ProvedCode-${BUILD_NUMBER}.tar.gz'
+                sh 'rm ./demo.jar ./ProvedCode-${BUILD_NUMBER}.tar.gz'
             }
         }
         stage('Deploy') {
@@ -34,8 +35,8 @@ pipeline {
                     chmod 755 ./backend/install-systemd-service.sh
                     ./backend/install-systemd-service.sh
                     tar xpvf ProvedCode-${BUILD_NUMBER}.tar.gz
-                    mv -f ./ProvedCode.jar ~/ProvedCode.jar
-                    chmod 755 ~/ProvedCode.jar
+                    mv -f ./demo.jar ~/demo.jar
+                    chmod 755 ~/demo.jar
                     rm ProvedCode-${BUILD_NUMBER}.tar.gz
                     sudo systemctl start ProvedCode
                 '''
