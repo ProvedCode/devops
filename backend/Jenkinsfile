@@ -18,9 +18,9 @@ pipeline {
                     mv ./target/demo*.jar ./demo.jar
                     tar cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./demo.jar
                 '''
-                withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
+                withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
+                        s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: "${BUCKET}", path:'backend/')
                     }
                 }
                 sh 'rm ./demo.jar ./ProvedCode-${BUILD_NUMBER}.tar.gz'
@@ -29,9 +29,9 @@ pipeline {
         stage('Deploy') {
             agent { label 'java && target && Team-Dmytro' }
             steps {
-                withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
+                withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Download(file:'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'backend/')
+                        s3Download(file:'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket:"${BUCKET}", path:'backend/')
                     }
                 }
                 sh '''
