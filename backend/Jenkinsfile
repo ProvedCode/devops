@@ -16,7 +16,7 @@ pipeline {
                     chmod 744 ./mvnw
                     ./mvnw clean package
                     mv ./target/demo*.jar ./demo.jar
-                    tar -cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./demo.jar
+                    tar cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./demo.jar
                 '''
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
                     s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
