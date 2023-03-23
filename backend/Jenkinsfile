@@ -43,7 +43,7 @@ pipeline {
             }
         }
     }
-    /*post {
+    post {
         always {
             discordSend description: "Backend build status: ${currentBuild.currentResult}",
                 link: env.BUILD_URL,
@@ -52,5 +52,5 @@ pipeline {
                 webhookURL: "${env.WEBHOOK_URL}"
             echo "${env.WEBHOOK_URL}"
         }
-    }*/
+    }
 }
