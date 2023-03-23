@@ -19,7 +19,9 @@ pipeline {
                     tar cvzf ProvedCode-${BUILD_NUMBER}.tar.gz ./demo.jar
                 '''
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
+                    script {
+                        s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: '${BUCKET}', path:'backend/')
+                    }
                 }
                 sh 'rm ./demo.jar ./ProvedCode-${BUILD_NUMBER}.tar.gz'
             }
@@ -28,7 +30,9 @@ pipeline {
             agent { label 'java && target && Team-Dmytro' }
             steps {
                 withAWS(credentials: '${SERVER_CREDENTIALS}', region: '${REGION}') {
-                    s3Download(file:'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'backend/')
+                    script {
+                        s3Download(file:'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket:'${BUCKET}', path:'backend/')
+                    }
                 }
                 sh '''
                     sudo systemctl stop ProvedCode || true
