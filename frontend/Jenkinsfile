@@ -1,39 +1,19 @@
 pipeline {
-    agent { label 'node.js' }
+    agent { label 'frontend' }
     environment {
-        SERVER_CREDENTIALS = 's3-test'
-        WEBHOOK_URL = credentials('DiscordWebHook')
-        BUCKET = 'test.khai'
+        SERVER_CREDENTIALS = 's3-access'
+        WEBHOOK_URL = credentials('DiscordWebhookDT')
+        BUCKET = 'dmytro-team-bucket'
     }
     stages {
         stage('clone') {
             steps {
-                script {
-                    if (fileExists("ReactDeploy")) {
-                        println 'ReactDeploy is already existing'
-                        if (fileExists("./ReactDeploy/node_modules") && !(fileExists("./node_modules"))) {
-                            sh "cp -r ./ReactDeploy/node_modules ./node_modules"
-                        }
-                        sh '''
-                            cd ReactDeploy
-                            git pull
-                        '''
-                    } else {
-                        println 'ReactDeploy is not existing. Cloning...'
-                        sh 'git clone git@github.com:SvarshikPlaton/ReactDeploy.git'
-                    }
-                }
+                git branch: 'dev', url: 'https://github.com/ProvedCode/frontend.git'
             }
         }
         stage('build') {
             steps {
-                script {
-                    if (fileExists("./node_modules")) {
-                       sh "cp -r ./node_modules ./ReactDeploy/"
-                    } 
-                }
                 sh '''
-                cd ReactDeploy
                 npm install 
                 npm run build
                 chmod -R 755 ./build/*
@@ -43,8 +23,8 @@ pipeline {
         stage('deploy') {
             steps {
                 sh '''
-                    ssh react-app@172.31.31.67 "rm -rf /var/www/react-application/html/*"
-                    scp -rp ./ReactDeploy/build/* react-app@172.31.31.67:/var/www/react-application/html
+                    ssh -i "/home/jenkins/.ssh/slave-SoftServe2023" dmytro-team@172.31.117.224 "rm -rf /var/www/dmytro-team/html/*"
+                    scp -i "/home/jenkins/.ssh/slave-SoftServe2023" -rp ./build/* dmytro-team@172.31.117.224:/var/www/dmytro-team/html/
                 '''
             }
         }
@@ -54,10 +34,10 @@ pipeline {
                     script {
                         println 'Uploading artifacts...'
                         sh '''
-                        cd ./ReactDeploy/build/
+                        cd ./build/
                         tar -cvzf "build-${BUILD_NUMBER}.tar.gz" ./*
                         '''
-                        s3Upload(file: "./ReactDeploy/build/build-${BUILD_NUMBER}.tar.gz", bucket: "${BUCKET}")
+                        s3Upload(file: "./build/build-${BUILD_NUMBER}.tar.gz", bucket: "${BUCKET}", path:"frontend/")
                     }
                 }
             }
