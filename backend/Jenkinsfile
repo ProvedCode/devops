@@ -20,7 +20,7 @@ pipeline {
                 '''
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Upload(file: 'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket: "${BUCKET}", path:'backend/')
+                        s3Upload(file: "ProvedCode-${BUILD_NUMBER}.tar.gz", bucket: "${BUCKET}", path:"backend/")
                     }
                 }
                 sh 'rm ./demo.jar ./ProvedCode-${BUILD_NUMBER}.tar.gz'
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Download(file:'ProvedCode-${BUILD_NUMBER}.tar.gz', bucket:"${BUCKET}", path:'backend/')
+                        s3Download(file:"ProvedCode-${BUILD_NUMBER}.tar.gz", bucket:"${BUCKET}", path:"backend/")
                     }
                 }
                 sh '''
