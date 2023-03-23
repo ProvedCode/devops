@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'java && jdk' }
     environment {
         SERVER_CREDENTIALS = 's3-access'
         WEBHOOK_URL = credentials('DiscordWebhookDT')
@@ -8,7 +8,6 @@ pipeline {
     }
     stages {
         stage('Build') {
-            agent { label 'java && jdk' }
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh '''
