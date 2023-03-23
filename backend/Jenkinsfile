@@ -34,12 +34,11 @@ pipeline {
                     }
                 }
                 sh '''
-                    sudo systemctl stop ProvedCode || true
+                    sudo systemctl stop provedcode || true
                     chmod 755 ./backend/install-systemd-service.sh
-                    pwd
                     ./backend/install-systemd-service.sh
                     mv -f ./demo-${BUILD_NUMBER}.jar ~/demo.jar
-                    sudo systemctl start ProvedCode
+                    sudo systemctl enable provedcode --now
                 '''
             }
         }
