@@ -8,7 +8,7 @@ pipeline {
     }
     stages {
         stage('Build') {
-            agent { label 'java && jdk' }
+            agent { label 'java && jdk-17' }
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh '''
@@ -26,7 +26,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent { label 'java && target && Team-Dmytro' }
+            agent { label 'java && target' }
             steps {
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
