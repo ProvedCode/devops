@@ -15,14 +15,14 @@ pipeline {
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     chmod 744 ./mvnw
                     ./mvnw clean package
-                    mv ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar
+                    cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar
                 '''
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
                         s3Upload(file: "./demo-${BUILD_NUMBER}.jar", bucket: "${BUCKET}", path:"backend/")
                     }
                 }
-                sh 'rm ./demo.jar ./ProvedCode-${BUILD_NUMBER}.tar.gz'
+                sh 'rm ./demo-${BUILD_NUMBER}.jar'
             }
         }
         stage('Deploy') {
