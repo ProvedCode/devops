@@ -5,6 +5,7 @@ pipeline {
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         REGION = 'eu-central-1'
+        LOGS = ${BUILD_URL} + 'consoleText'
     }
     stages {
         stage('Build') {
@@ -48,7 +49,7 @@ pipeline {
     }
     post {
         always {
-            discordSend description: "Status: `${currentBuild.currentResult}`\nBuild log:${env.BUILD_LOG}",
+            discordSend description: "Status: `${currentBuild.currentResult}`\nBuild log: ${LOGS}",
                 link: env.BUILD_URL,
                 result: currentBuild.currentResult,
                 title: JOB_NAME,
