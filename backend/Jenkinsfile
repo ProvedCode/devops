@@ -12,12 +12,12 @@ pipeline {
             steps {
                 echo 'Cloning repo, setting permissions...'
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
+                sh 'chmod 744 ./mvnw'
+                echo 'Build start...'
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
-                    chmod 744 ./mvnw
+                    ./mvnw clean package
                 '''
-                echo 'Build start...'
-                sh './mvnw clean package'
                 echo 'Build successful! Starting artifact archiving...'
                 sh 'cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
