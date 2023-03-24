@@ -4,6 +4,7 @@ pipeline {
         SERVER_CREDENTIALS = 's3-access'
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
+        API_URL = credentials('url_back_dt')
     }
     stages {
         stage('clone') {
@@ -14,6 +15,7 @@ pipeline {
         stage('build') {
             steps {
                 sh '''
+                export REACT_APP_API_URL=${API_URL}
                 npm install 
                 npm run build
                 chmod -R 755 ./build/*
