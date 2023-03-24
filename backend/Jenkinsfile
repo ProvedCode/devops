@@ -10,15 +10,15 @@ pipeline {
         stage('Build') {
             agent { label 'java && jdk-17' }
             steps {
-                echo 'Cloning repo, setting permissions...'
+                println 'Cloning repo, setting permissions...'
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh 'chmod 744 ./mvnw'
-                echo 'Build start...'
+                println 'Build start...'
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     ./mvnw clean package
                 '''
-                echo 'Build successful! Starting artifact archiving...'
+                println 'Build successful!'
                 sh 'cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
@@ -26,19 +26,16 @@ pipeline {
                     }
                 }
                 sh 'rm ./demo-${BUILD_NUMBER}.jar'
-                echo 'Artifacts archieved!'
             }
         }
         stage('Deploy') {
             agent { label 'java && target' }
             steps {
-                echo 'Retrieving artifacts on server...'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
                         s3Download(file:"./demo-${BUILD_NUMBER}.jar", bucket:"${BUCKET}", path:"backend/demo-${BUILD_NUMBER}.jar")
                     }
                 }
-                echo 'Artifacts retrieved! Restarting systemd service...'
                 sh '''
                     sudo systemctl stop provedcode || true
                     chmod 755 ./backend/install-systemd-service.sh
@@ -46,14 +43,12 @@ pipeline {
                     mv -f ./demo-${BUILD_NUMBER}.jar ~/demo.jar
                     sudo systemctl enable provedcode --now
                 '''
-                echo 'Systemd service reastarted, artifact deployed!'
             }
         }
     }
     post {
         always {
             discordSend description: "Status: `${currentBuild.currentResult}`\nBuild log:\n```${BUILD_LOG}```",
-                footer: "With any questions regarding backend build tag @ViktorShahter#1174",
                 link: env.BUILD_URL,
                 result: currentBuild.currentResult,
                 title: JOB_NAME,
