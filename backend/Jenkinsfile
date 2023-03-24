@@ -10,29 +10,35 @@ pipeline {
         stage('Build') {
             agent { label 'java && jdk-17' }
             steps {
+                echo 'Cloning repo, setting permissions...'
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     chmod 744 ./mvnw
-                    ./mvnw clean package
-                    cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar
                 '''
+                echo 'Build start...'
+                sh './mvnw clean package'
+                echo 'Build successful! Starting artifact archiving...'
+                sh 'cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
                         s3Upload(file: "./demo-${BUILD_NUMBER}.jar", bucket: "${BUCKET}", path:"backend/demo-${BUILD_NUMBER}.jar")
                     }
                 }
                 sh 'rm ./demo-${BUILD_NUMBER}.jar'
+                echo 'Artifacts archieved!'
             }
         }
         stage('Deploy') {
             agent { label 'java && target' }
             steps {
+                echo 'Retrieving artifacts on server...'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
                         s3Download(file:"./demo-${BUILD_NUMBER}.jar", bucket:"${BUCKET}", path:"backend/demo-${BUILD_NUMBER}.jar")
                     }
                 }
+                echo 'Artifacts retrieved! Restarting systemd service...'
                 sh '''
                     sudo systemctl stop provedcode || true
                     chmod 755 ./backend/install-systemd-service.sh
@@ -40,17 +46,18 @@ pipeline {
                     mv -f ./demo-${BUILD_NUMBER}.jar ~/demo.jar
                     sudo systemctl enable provedcode --now
                 '''
+                echo 'Systemd service reastarted, artifact deployed!'
             }
         }
     }
     post {
         always {
-            discordSend description: "Backend build status: ${currentBuild.currentResult}",
-                link: env.BUILD_URL,
-                result: currentBuild.currentResult,
+            discordSend
                 title: JOB_NAME,
+                result: currentBuild.currentResult,
+                description: "Status: ${currentBuild.currentResult}\nBuild log: ${BUILD_LOG}",
+                link: env.BUILD_URL,
                 webhookURL: "${env.WEBHOOK_URL}"
-            echo "${env.WEBHOOK_URL}"
         }
     }
 }
