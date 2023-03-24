@@ -8,15 +8,18 @@ pipeline {
     }
     stages {
         stage('Build') {
-            agent { label 'java && jdk' }
+            agent { label 'java && jdk-17' }
             steps {
+                println 'Cloning repo, setting permissions...'
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
+                sh 'chmod 744 ./mvnw'
+                println 'Build start...'
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
-                    chmod 744 ./mvnw
                     ./mvnw clean package
-                    cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar
                 '''
+                println 'Build successfull!'
+                sh 'cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
                         s3Upload(file: "./demo-${BUILD_NUMBER}.jar", bucket: "${BUCKET}", path:"backend/demo-${BUILD_NUMBER}.jar")
@@ -26,7 +29,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent { label 'java && target && Team-Dmytro' }
+            agent { label 'java && target' }
             steps {
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
@@ -45,12 +48,11 @@ pipeline {
     }
     post {
         always {
-            discordSend description: "Backend build status: ${currentBuild.currentResult}",
+            discordSend description: "Status: `${currentBuild.currentResult}`\nBuild log: ${BUILD_URL}consoleText",
                 link: env.BUILD_URL,
                 result: currentBuild.currentResult,
                 title: JOB_NAME,
                 webhookURL: "${env.WEBHOOK_URL}"
-            echo "${env.WEBHOOK_URL}"
         }
     }
 }
