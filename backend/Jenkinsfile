@@ -5,7 +5,7 @@ pipeline {
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         REGION = 'eu-central-1'
-        LOGS = ${BUILD_URL} + 'consoleText'
+        LOGS = "${BUILD_URL}" + "consoleText"
     }
     stages {
         stage('Build') {
