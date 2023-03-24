@@ -53,8 +53,8 @@ pipeline {
     post {
         always {
             discordSend
-                title: JOB_NAME,
-                result: currentBuild.currentResult,
+                title: "${JOB_NAME}",
+                result: "${currentBuild.currentResult}",
                 description: "Status: ${currentBuild.currentResult}\nBuild log:\n```${BUILD_LOG}"```,
                 link: env.BUILD_URL,
                 webhookURL: "${env.WEBHOOK_URL}"
