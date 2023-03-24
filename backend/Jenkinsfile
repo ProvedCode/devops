@@ -48,7 +48,7 @@ pipeline {
     }
     post {
         always {
-            discordSend description: "Status: `${currentBuild.currentResult}`\nBuild log:\n```${currentBuild.rawBuild.getLog(5)}```",
+            discordSend description: "Status: `${currentBuild.currentResult}`\nBuild log:${env.BUILD_LOG}",
                 link: env.BUILD_URL,
                 result: currentBuild.currentResult,
                 title: JOB_NAME,
