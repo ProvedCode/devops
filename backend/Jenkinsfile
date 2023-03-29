@@ -17,9 +17,10 @@ pipeline {
                 println 'Build start...'
 
                 withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "S3_ACCESS_KEY", regionName: "########") {
-                    export S3_ACCESS_KEY=$(S3_ACCESS_KEY)
+                    // export S3_ACCESS_KEY=$(S3_ACCESS_KEY)
+                    echo S3_ACCESS_KEY
                 }
-                
+
                 sh '''
                     echo $S3_ACCESS_KEY
                     sleep 3
