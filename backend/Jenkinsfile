@@ -16,15 +16,15 @@ pipeline {
                 sh 'chmod 744 ./mvnw'
                 println 'Build start...'
 
-                withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "S3_ACCESS_KEY", regionName: "########") {
-                    // export S3_ACCESS_KEY=$(S3_ACCESS_KEY)
-                    echo S3_ACCESS_KEY
-                }
+                // withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "S3_ACCESS_KEY", regionName: "########") { // TODO
+                //     // export S3_ACCESS_KEY=$(S3_ACCESS_KEY)
+                //     echo S3_ACCESS_KEY
+                // }
+
+                // echo $S3_ACCESS_KEY // TODO
+                // sleep 3 // TODO
 
                 sh '''
-                    echo $S3_ACCESS_KEY
-                    sleep 3
-
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     ./mvnw clean package
                 '''
