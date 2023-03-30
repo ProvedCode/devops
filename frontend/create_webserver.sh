@@ -1,8 +1,9 @@
 #!/bin/bash
 
 IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-SITES=(site1.com    site2.com   site3.com   site4.com   site5.com)
+FOLDERS=(dmytro-team   maksym-team   oleksandr-team  olha-team   vladyslav-team)
 PORTS=(8081         8082        8083        8084        8085)
+DOMENS=(provedcode.pepega.cloud starlight.pepega.cloud uptalent.pepega.cloud talantino.pepega.cloud skillscope.pepega.cloud)
 
 read -p "Are you running this script on AWS (y/N): " ON_AWS
 
@@ -24,15 +25,18 @@ then
     iptables -A OUTPUT -o lo -j ACCEPT
     iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
     iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+    iptables -I INPUT -p tcp --dport 80 -j ACCEPT
 fi
 
 mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak
 echo "" > /etc/nginx/conf.d/sites.conf
 
-for (( i=0; i<${#SITES[@]}; i++ ))
+for (( i=0; i<${#FOLDERS[@]}; i++ ))
 do
-mkdir -p /var/www/${SITES[$i]}/html
-echo "Site $(( $i + 1 ))" > /var/www/${SITES[$i]}/html/index.html
+mkdir -p /var/www/${FOLDERS[$i]}/html
+echo "Site $(( $i + 1 ))" > /var/www/${FOLDERS[$i]}/html/index.html
+mkdir -p /var/www/${FOLDERS[$i]}-production/html
+echo "Site $(( $i + 1 ))" > /var/www/${FOLDERS[$i]}-production/html/index.html
 
 if [ "$ON_AWS" != "y" ]
 then
@@ -42,10 +46,26 @@ fi
 cat >> /etc/nginx/conf.d/sites.conf << EOF
 server {
     listen ${PORTS[$i]};
+    server_name $IP;
+    root /var/www/${FOLDERS[$i]}/html;
+    location / {
+        try_files \$uri /index.html;
+    }
+}
 
-    server_name $IP);
-    root /var/www/${SITES[$i]}/html;
+server {
+    listen 80;
+    server_name dev.${DOMENS[$i]};
+    root /var/www/${FOLDERS[$i]}/html;
+    location / {
+        try_files \$uri /index.html;
+    }
+}
 
+server {
+    listen 80;
+    server_name ${DOMENS[$i]};
+    root /var/www/${FOLDERS[$i]}-production/html;
     location / {
         try_files \$uri /index.html;
     }
@@ -53,10 +73,6 @@ server {
 
 EOF
 done
-
-# if [ ! -f /etc/nginx/sites-enabled/sites.conf ]; then
-#    ln -s /etc/nginx/sites-available/sites.conf /etc/nginx/sites-enabled/sites.conf
-# fi
 
 if [ "$ON_AWS" != "y" ]
 then
