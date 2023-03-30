@@ -1,0 +1,58 @@
+pipeline {
+    agent { label 'frontend' }
+    environment {
+        SERVER_CREDENTIALS = 's3-access'
+        WEBHOOK_URL = credentials('DiscordWebhookDT')
+        BUCKET = 'dmytro-team-bucket'
+        API_URL = credentials('url_back_dt')
+    }
+    stages {
+        stage('clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ProvedCode/frontend.git'
+            }
+        }
+        stage('build') {
+            steps {
+                sh '''
+                export REACT_APP_API_URL=${API_URL}
+                npm install 
+                npm run build
+                chmod -R 755 ./build/*
+                '''
+            }
+        }
+        stage('deploy') {
+            steps {
+                sh '''
+                    ssh -i "/home/jenkins/.ssh/slave-SoftServe2023" dmytro-team@172.31.117.224 "rm -rf /var/www/dmytro-team-production/html/*"
+                    scp -i "/home/jenkins/.ssh/slave-SoftServe2023" -rp ./build/* dmytro-team@172.31.117.224:/var/www/dmytro-team-production/html/
+                '''
+            }
+        }
+        stage('upload to s3') {
+            steps {
+                withAWS(credentials: "${SERVER_CREDENTIALS}", region: 'eu-central-1') {
+                    script {
+                        println 'Uploading artifacts...'
+                        sh '''
+                        cd ./build/
+                        tar -cvzf "build-${BUILD_NUMBER}.tar.gz" ./*
+                        '''
+                        s3Upload(file: "./build/build-${BUILD_NUMBER}.tar.gz", bucket: "${BUCKET}", path:"frontend/main")
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            discordSend description: "Jenkins pipeline build: ${currentBuild.currentResult}",
+                link: env.BUILD_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: "${env.WEBHOOK_URL}"
+            echo "${env.WEBHOOK_URL}"
+        }
+    }
+}
