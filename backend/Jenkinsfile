@@ -26,7 +26,7 @@ pipeline {
 
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
-                    rm .env
+                    rm -f .env
                     echo "SPRING_PROFILES_ACTIVE=prod" >> .env
                     ./mvnw clean package
                 '''
