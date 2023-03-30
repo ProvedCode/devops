@@ -3,7 +3,7 @@
 IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 FOLDERS=(dmytro-team   maksym-team   oleksandr-team  olha-team   vladyslav-team)
 PORTS=(8081         8082        8083        8084        8085)
-DOMENS=(provedcode.pepega.cloud starlight.pepega.cloud uptalent.pepega.cloud talantino.pepega.cloud skillscope.pepega.cloud)
+DOMEINS=(provedcode.pepega.cloud starlight.pepega.cloud uptalent.pepega.cloud talantino.pepega.cloud skillscope.pepega.cloud)
 
 read -p "Are you running this script on AWS (y/N): " ON_AWS
 
@@ -55,7 +55,7 @@ server {
 
 server {
     listen 80;
-    server_name dev.${DOMENS[$i]};
+    server_name dev.${DOMEINS[$i]};
     root /var/www/${FOLDERS[$i]}/html;
     location / {
         try_files \$uri /index.html;
@@ -64,7 +64,7 @@ server {
 
 server {
     listen 80;
-    server_name ${DOMENS[$i]};
+    server_name ${DOMEINS[$i]};
     root /var/www/${FOLDERS[$i]}-production/html;
     location / {
         try_files \$uri /index.html;
