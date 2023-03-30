@@ -35,8 +35,14 @@ for (( i=0; i<${#FOLDERS[@]}; i++ ))
 do
 mkdir -p /var/www/${FOLDERS[$i]}/html
 echo "Site $(( $i + 1 ))" > /var/www/${FOLDERS[$i]}/html/index.html
+chown -R ${FOLDERS[$i]}:${FOLDERS[$i]} /var/www/${FOLDERS[$i]}/html
+chmod -R 755 /var/www/${FOLDERS[$i]}
+
 mkdir -p /var/www/${FOLDERS[$i]}-production/html
 echo "Site $(( $i + 1 ))" > /var/www/${FOLDERS[$i]}-production/html/index.html
+chown -R ${FOLDERS[$i]}:${FOLDERS[$i]} /var/www/${FOLDERS[$i]}-production/html
+chmod -R 755 /var/www/${FOLDERS[$i]}-production
+
 
 if [ "$ON_AWS" != "y" ]
 then
