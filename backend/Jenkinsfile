@@ -16,6 +16,8 @@ pipeline {
                 println 'Build start...'
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
+                    rm .env
+                    echo "SPRING_PROFILES_ACTIVE=prod" >> .env
                     ./mvnw clean package
                 '''
                 println 'Build successfull!'
