@@ -4,6 +4,7 @@ pipeline {
         SERVER_CREDENTIALS = 's3-access'
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
+        BACKEND_BUCKET = 'dmytro-team-backend'
         REGION = 'eu-central-1'
     }
     stages {
@@ -14,12 +15,22 @@ pipeline {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh 'chmod 744 ./mvnw'
                 println 'Build start...'
+
+                // withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "S3_ACCESS_KEY", regionName: "########") { // TODO
+                //     // export S3_ACCESS_KEY=$(S3_ACCESS_KEY)
+                //     echo S3_ACCESS_KEY
+                // }
+
+                // echo $S3_ACCESS_KEY // TODO
+                // sleep 3 // TODO
+
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     rm .env
                     echo "SPRING_PROFILES_ACTIVE=prod" >> .env
                     ./mvnw clean package
                 '''
+                
                 println 'Build successfull!'
                 sh 'cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
