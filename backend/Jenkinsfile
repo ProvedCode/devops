@@ -31,7 +31,7 @@ pipeline {
                 '''
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Upload(file: "./demo-${BUILD_NUMBER}.jar", bucket: "${BUCKET}", path:"backend/demo-${BUILD_NUMBER}.jar")
+                        s3Upload(file: "./demo-${BUILD_NUMBER}.jar", bucket: "${BUCKET}", path:"backend/main/demo-${BUILD_NUMBER}.jar")
                     }
                 }
                 sh 'rm ./demo-${BUILD_NUMBER}.jar'
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
-                        s3Download(file:"./demo-${BUILD_NUMBER}.jar", bucket:"${BUCKET}", path:"backend/demo-${BUILD_NUMBER}.jar")
+                        s3Download(file:"./demo-${BUILD_NUMBER}.jar", bucket:"${BUCKET}", path:"backend/main/demo-${BUILD_NUMBER}.jar")
                     }
                 }
                 sh '''
