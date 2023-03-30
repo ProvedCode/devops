@@ -22,8 +22,8 @@ pipeline {
                 // sleep 3 // TODO
 
                 sh '''
-                    chmod 744 ./mvnw
                     export JAVA_HOME="/lib/jvm/jdk-17"
+                    chmod 744 ./mvnw
                     rm -f .env
                     echo "SPRING_PROFILES_ACTIVE=prod" >> .env
                     ./mvnw clean package
