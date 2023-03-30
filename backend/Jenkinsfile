@@ -11,10 +11,7 @@ pipeline {
         stage('Build') {
             agent { label 'java && jdk-17' }
             steps {
-                println 'Cloning repo, setting permissions...'
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
-                sh 'chmod 744 ./mvnw'
-                println 'Build start...'
 
                 // withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "S3_ACCESS_KEY", regionName: "########") { // TODO
                 //     // export S3_ACCESS_KEY=$(S3_ACCESS_KEY)
@@ -25,14 +22,13 @@ pipeline {
                 // sleep 3 // TODO
 
                 sh '''
+                    chmod 744 ./mvnw
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     rm -f .env
                     echo "SPRING_PROFILES_ACTIVE=prod" >> .env
                     ./mvnw clean package
+                    cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar
                 '''
-                
-                println 'Build successfull!'
-                sh 'cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar'
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
                         s3Upload(file: "./demo-${BUILD_NUMBER}.jar", bucket: "${BUCKET}", path:"backend/demo-${BUILD_NUMBER}.jar")
