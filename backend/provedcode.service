@@ -1,0 +1,14 @@
+[Unit]
+Description=ProvedCode systemd service
+DefaultDependencies=no
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=java -jar /var/lib/jenkins/demo.jar --server.port=8081
+TimeoutStartSec=0
+RemainAfterExit=yes
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
