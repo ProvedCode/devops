@@ -12,15 +12,6 @@ pipeline {
             agent { label 'java && jdk-17' }
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
-
-                // withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "S3_ACCESS_KEY", regionName: "########") { // TODO
-                //     // export S3_ACCESS_KEY=$(S3_ACCESS_KEY)
-                //     echo S3_ACCESS_KEY
-                // }
-
-                // echo $S3_ACCESS_KEY // TODO
-                // sleep 3 // TODO
-
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
                     chmod 744 ./mvnw
