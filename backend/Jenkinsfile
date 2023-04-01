@@ -14,12 +14,14 @@ pipeline {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
 
                 withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "dt_backend_access_key", regionName: "########") {
-                    // export S3_ACCESS_KEY=$(DT_BACKEND_ACCESS_KEY)
-                    // echo S3_ACCESS_KEY
-                    echo "${env.dt_backend_access_key}" 
-                    export S3_ACCESS_KEY="${env.dt_backend_access_key}"
-                    echo $S3_ACCESS_KEY
-                    sleep 3  
+                    sh '''
+                        // export S3_ACCESS_KEY=$(DT_BACKEND_ACCESS_KEY)
+                        // echo S3_ACCESS_KEY
+                        echo "${env.dt_backend_access_key}" 
+                        export S3_ACCESS_KEY="${env.dt_backend_access_key}"
+                        echo $S3_ACCESS_KEY
+                        sleep 3
+                    '''  
                 }
 
                 sh '''
