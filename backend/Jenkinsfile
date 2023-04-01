@@ -2,7 +2,6 @@ pipeline {
     agent none
     environment {
         SERVER_CREDENTIALS = 's3-access'
-        PARAMETER_STORE_CREDENTIALS = credentials('parameterstore')
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         BACKEND_BUCKET = 'dmytro-team-backend'
@@ -14,20 +13,13 @@ pipeline {
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
 
-                        // export S3_ACCESS_KEY=$(DT_BACKEND_ACCESS_KEY)
-                        // echo S3_ACCESS_KEY
-
-                withAWSParameterStore (namePrefixes: "dt_backend_access_key", regionName: "${REGION}") {
-                    sh '''
-                        echo "${env.dt_backend_access_key}" 
-                        export S3_ACCESS_KEY="${env.dt_backend_access_key}"
-                        echo $S3_ACCESS_KEY
-                        sleep 3
-                    '''  
-                }
-
                 sh '''
                     export JAVA_HOME="/lib/jvm/jdk-17"
+                    export S3_ACCESS_KEY=$(aws ssm get-parameter --name myParam --with-decryption --query Parameter.Value --output text)
+                    
+                    echo $S3_ACCESS_KEY
+                    sleep 3
+
                     chmod 744 ./mvnw
                     rm -f .env
                     echo "SPRING_PROFILES_ACTIVE=prod" >> .env
