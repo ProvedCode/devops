@@ -2,7 +2,7 @@ pipeline {
     agent none
     environment {
         SERVER_CREDENTIALS = 's3-access'
-        PARAMETER_STORE_CREDENTIALS = 'parameterstore'
+        PARAMETER_STORE_CREDENTIALS = credentials('parameterstore')
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         BACKEND_BUCKET = 'dmytro-team-backend'
