@@ -2,6 +2,7 @@ pipeline {
     agent none
     environment {
         SERVER_CREDENTIALS = 's3-access'
+        PARAMETER_STORE_CREDENTIALS = 'parameterstore'
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         BACKEND_BUCKET = 'dmytro-team-backend'
@@ -16,7 +17,7 @@ pipeline {
                         // export S3_ACCESS_KEY=$(DT_BACKEND_ACCESS_KEY)
                         // echo S3_ACCESS_KEY
 
-                withAWSParameterStore (credentialsId: "${SERVER_CREDENTIALS}", namePrefixes: "dt_backend_access_key", regionName: "${REGION}") {
+                withAWSParameterStore (credentialsId: "${PARAMETER_STORE_CREDENTIALS}", namePrefixes: "dt_backend_access_key", regionName: "${REGION}") {
                     sh '''
                         echo "${env.dt_backend_access_key}" 
                         export S3_ACCESS_KEY="${env.dt_backend_access_key}"
