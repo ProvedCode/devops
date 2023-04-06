@@ -1,0 +1,50 @@
+project_name = "my-project-01"
+jenkins_ip_cidr_range = "10.198.0.0/20"
+gce_vm_ssh_pub_key_file = "/home/user/ssh-keys/my-project-01/jenkins-master-vm.pub"
+
+# region = "us-east1"
+
+gce_vm_properties = [
+  {
+    short_name      = "jenkins-master"
+    machine_type    = "n2-standard-2"
+    zone_letter     = "b"
+    boot_disk_size  = "10"
+    boot_disk_image = "projects/debian-cloud/global/images/debian-11-bullseye-v20230306"
+    public_ip       = true
+    tags            = ["http-allow", "ssh-allow", "jenkins-agent-allow"]
+    labels = {
+      role = "jenkins"
+    }
+  }
+]
+
+jenkins_firewall_rules = [
+  {
+    name          = "ingress-allow-ssh"
+    action        = "allow"
+    protocol      = "tcp"
+    ports         = ["22"]
+    direction     = "INGRESS"
+    source_ranges = ["0.0.0.0/0"]
+    target_tags   = ["ssh-allow"]
+  },
+  {
+    name          = "ingress-allow-http"
+    action        = "allow"
+    protocol      = "tcp"
+    ports         = ["8080"]
+    direction     = "INGRESS"
+    source_ranges = ["188.163.35.191/32"]
+    target_tags   = ["http-allow"]
+  },
+  {
+    name          = "ingress-allow-jenkins-agent"
+    action        = "allow"
+    protocol      = "tcp"
+    ports         = ["50000"]
+    direction     = "INGRESS"
+    source_ranges = ["10.198.0.0/20"]
+    target_tags   = ["jenkins-agent-allow"]
+  }
+]
