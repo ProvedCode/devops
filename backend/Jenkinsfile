@@ -38,7 +38,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent { label 'java && target' }
+            agent { label 'java && target && dev' }
             steps {
                 withAWS(credentials: "${SERVER_CREDENTIALS}", region: "${REGION}") {
                     script {
