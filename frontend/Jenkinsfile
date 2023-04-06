@@ -52,6 +52,7 @@ pipeline {
                 result: currentBuild.currentResult,
                 title: JOB_NAME,
                 webhookURL: "${env.WEBHOOK_URL}"
+            sh 'rm -rf ../*'
         }
     }
 }
