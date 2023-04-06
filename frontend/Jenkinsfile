@@ -39,7 +39,7 @@ pipeline {
                         cd ./build/
                         tar -cvzf "build-${BUILD_NUMBER}.tar.gz" ./*
                         '''
-                        s3Upload(file: "./build/build-${BUILD_NUMBER}.tar.gz", bucket: "${BUCKET}", path:"frontend/")
+                        s3Upload(file: "./build/build-${BUILD_NUMBER}.tar.gz", bucket: "${BUCKET}", path:"frontend/dev")
                     }
                 }
             }
