@@ -28,9 +28,10 @@ pipeline {
                     export DB_PASSWORD=$(aws ssm get-parameter --region ${REGION} --name ${DATABASE_PASSWORD} --with-decryption --query Parameter.Value --output text)
                     export DB_URL=$(aws ssm get-parameter --region ${REGION} --name ${DATABASE_URL} --with-decryption --query Parameter.Value --output text)
 
-                    chmod 744 ./mvnw
                     rm -f .env
-                    echo "SPRING_PROFILES_ACTIVE=prod" >> .env
+                    export SPRING_PROFILES_ACTIVE=prod
+
+                    chmod 744 ./mvnw
                     ./mvnw clean package
                     cp ./target/demo*.jar ./demo-${BUILD_NUMBER}.jar
                 '''
