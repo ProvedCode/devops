@@ -2,13 +2,13 @@ pipeline {
     agent none
     environment {
         SERVER_CREDENTIALS = 's3-access'
-        WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         REGION = 'eu-central-1'
         BACKEND_ACCESS_KEY = credentials('dt_backend_access_key')
         BACKEND_SECRET_KEY = credentials('dt_backend_secret_key')
-        DATABASE_URL = 'dt_database_url'
-        DATABASE_PASSWORD = 'dt_database_password'
+        DATABASE_URL = credentials('dt_database_url')
+        DATABASE_PASSWORD = credentials('dt_database_password')
+        WEBHOOK_URL = credentials('DiscordWebhookDT')
     }
     stages {
         stage('Build') {
@@ -24,8 +24,8 @@ pipeline {
                     export S3_REGION=${REGION}
 
                     export DB_LOGIN="dt"
-                    export DB_PASSWORD=$(aws ssm get-parameter --region ${REGION} --name ${DATABASE_PASSWORD} --with-decryption --query Parameter.Value --output text)
-                    export DB_URL=$(aws ssm get-parameter --region ${REGION} --name ${DATABASE_URL} --with-decryption --query Parameter.Value --output text)
+                    export DB_PASSWORD=${DATABASE_PASSWORD}
+                    export DB_URL=${DATABASE_URL}
 
                     rm -f .env
                     export SPRING_PROFILES_ACTIVE=prod
