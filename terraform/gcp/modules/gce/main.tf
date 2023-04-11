@@ -17,7 +17,6 @@ resource "google_compute_instance" "jenkins" {
 
   network_interface {
     subnetwork_project = var.vm_project_name
-    # subnetwork         = google_compute_subnetwork.jenkins-subnet.name
     subnetwork = var.vm_subnetwork
     dynamic "access_config" {
       for_each = local.vms[count.index].public_ip == true ? [1] : []
@@ -25,27 +24,13 @@ resource "google_compute_instance" "jenkins" {
     }
   }
 
-  metadata_startup_script = file("scripts/install-jenkins.sh")
-
-  # metadata_startup_script = templatefile("startup.tmpl",
-  #   {
-  #     jenkins_version = var.jenkins_version
-  #     jenkins_external_port = try(var.firewall_rules[1].ports[0], "8080")
-  #   })
+  metadata_startup_script = templatefile("templates/startup.tmpl",
+    {
+      jenkins_image_url = var.jenkins_image_url
+      jenkins_version = var.jenkins_version
+    })
 
   metadata = {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_file)}"
   }
 }
-
-# output "ssh_pub_key" {
-#   value = file(var.ssh_pub_key_file)
-# }
-
-# output "message" {
-#   value = "Hello World!"
-# }
-
-# output "vm_properties" {
-#   value = local.vms
-# }

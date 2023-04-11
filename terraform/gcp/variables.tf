@@ -1,7 +1,7 @@
 variable "region" {
   type        = string
   description = "GCP region, possible values below"
-  default     = "us-central1"
+  default     = "europe-central2"
   # "asia-east1"
   # "asia-east"
   # "asia-northeast1"
@@ -12,6 +12,7 @@ variable "region" {
   # "asia-southeast2"
   # "australia-southeast1"
   # "europe-north1"
+  # "europe-central2"
   # "europe-west1"
   # "europe-west2"
   # "europe-west3"

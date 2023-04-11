@@ -14,23 +14,3 @@ module "gce" {
   ssh_pub_key_file = var.gce_vm_ssh_pub_key_file
   vm_properties = var.gce_vm_properties
 }
-
-# output "gce_vm_ssh_pub_key" {
-#   value = module.gce.ssh_pub_key
-# }
-
-# output "message" {
-#   value = module.gce.message
-# }
-
-# output "vm_properties" {
-#   value = module.gce.vm_properties
-# }
-
-# output "region" {
-#   value = var.region
-# }
-
-# output "project" {
-#   value = var.project_name
-# }

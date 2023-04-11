@@ -30,3 +30,15 @@ variable "ssh_pub_key_file" {
   type = string
   description = "Public key for Jenkins SSH User"
 }
+
+variable "jenkins_version" {
+  type = string
+  description = "Jenkins Version"
+  default = "latest"
+}
+
+variable "jenkins_image_url" {
+  type = string
+  description = "Jenkins container image URL"
+  default = "jenkins/jenkins"
+}
