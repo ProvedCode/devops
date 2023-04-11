@@ -16,8 +16,9 @@ pipeline {
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
                 sh '''
+                    rm -f .env
                     export JAVA_HOME="/lib/jvm/jdk-17"
-                    
+
                     export BUCKET="dmytro-team-backend"
                     export S3_ACCESS_KEY=${BACKEND_ACCESS_KEY}
                     export S3_SECRET_KEY=${BACKEND_SECRET_KEY}
@@ -26,8 +27,7 @@ pipeline {
                     export DB_LOGIN="dt"
                     export DB_PASSWORD=${DATABASE_PASSWORD}
                     export DB_URL=${DATABASE_URL}
-
-                    rm -f .env
+                    
                     export SPRING_PROFILES_ACTIVE=prod
 
                     chmod 744 ./mvnw
