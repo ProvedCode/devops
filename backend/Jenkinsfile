@@ -15,10 +15,11 @@ pipeline {
             agent { label 'java && jdk-17' }
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
+                envFile '.env'
                 sh '''
                     rm -f .env
                     export JAVA_HOME="/lib/jvm/jdk-17"
-
+                    
                     export BUCKET="dmytro-team-backend"
                     export S3_ACCESS_KEY=${BACKEND_ACCESS_KEY}
                     export S3_SECRET_KEY=${BACKEND_SECRET_KEY}
@@ -27,8 +28,11 @@ pipeline {
                     export DB_LOGIN="dt"
                     export DB_PASSWORD=${DATABASE_PASSWORD}
                     export DB_URL=${DATABASE_URL}
-                    
+
                     export SPRING_PROFILES_ACTIVE=prod
+
+                    echo $S3_ACCESS_KEY
+                    echo $S3_SECRET_KEY
 
                     chmod 744 ./mvnw
                     ./mvnw clean package
