@@ -30,8 +30,7 @@ pipeline {
 
                     export SPRING_PROFILES_ACTIVE=prod
 
-                    echo $S3_ACCESS_KEY
-                    echo $S3_SECRET_KEY
+                    echo $S3_ACCESS_KEY >> ".env"
 
                     chmod 744 ./mvnw
                     ./mvnw clean package
