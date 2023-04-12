@@ -18,11 +18,6 @@ pipeline {
                 sh '''
                     rm -f .env
                     export JAVA_HOME="/lib/jvm/jdk-17"
-                    
-                    export BUCKET="dmytro-team-backend"
-                    export S3_ACCESS_KEY=${BACKEND_ACCESS_KEY}
-                    export S3_SECRET_KEY=${BACKEND_SECRET_KEY}
-                    export S3_REGION=${REGION}
 
                     export DB_LOGIN="dt"
                     export DB_PASSWORD=${DATABASE_PASSWORD}
@@ -51,6 +46,11 @@ pipeline {
                     }
                 }
                 sh '''
+                    export BUCKET="dmytro-team-backend"
+                    export S3_ACCESS_KEY=${BACKEND_ACCESS_KEY}
+                    export S3_SECRET_KEY=${BACKEND_SECRET_KEY}
+                    export S3_REGION=${REGION}
+
                     sudo systemctl stop provedcode || true
                     chmod 755 ./backend/install-systemd-service.sh
                     ./backend/install-systemd-service.sh
