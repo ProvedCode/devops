@@ -5,6 +5,9 @@ pipeline {
         WEBHOOK_URL = credentials('DiscordWebhookDT')
         BUCKET = 'dmytro-team-bucket'
         API_URL = credentials('url_back_dt')
+        REGION = 'eu-central-1'
+        FRONTEND_ACCESS_KEY = credentials('dt_frontend_access_key')
+        FRONTEND_SECRET_KEY = credentials('dt_frontend_secret_key')
     }
     stages {
         stage('clone') {
@@ -16,6 +19,11 @@ pipeline {
             steps {
                 sh '''
                 export REACT_APP_API_URL=${API_URL}
+                export BUCKET="dmytro-team-backend"
+                export S3_ACCESS_KEY=${FRONTEND_ACCESS_KEY}
+                export S3_SECRET_KEY=${FRONTEND_SECRET_KEY}
+                export S3_REGION=${REGION}
+
                 npm install 
                 npm run build
                 chmod -R 755 ./build/*
