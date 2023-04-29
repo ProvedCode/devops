@@ -19,7 +19,15 @@ pipeline {
                 script {
                     def computer = Jenkins.getInstance().getComputer('Backend Server (Dev) (Debian)')
                     if (computer.isOffline()) {
-                        sh('aws ec2 start-instances --instance-ids ${EC2_BACKEND_ID}')
+                        while (true) {
+                            try {
+                                sh('aws ec2 start-instances --instance-ids ${EC2_BACKEND_ID}')
+                                break
+                            } catch (err) { 
+                                echo("${err}")
+                                sleep(time: 10)
+                            }
+                        }
                     }
                 }
             }
