@@ -94,7 +94,7 @@ pipeline {
                         echo(time)
                         
                         if (time >= "23:00" || time < "11:00") {
-                            sleep(time: 600)
+                            sleep(time: 300)
                             sh('aws ec2 stop-instances --instance-ids ${EC2_BACKEND_ID}')
                         }
                     }
