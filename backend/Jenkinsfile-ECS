@@ -1,0 +1,94 @@
+pipeline {
+    agent none
+    environment {
+        SERVER_CREDENTIALS = 's3-access'
+        BUCKET = 'dmytro-team-bucket'
+        REGION = 'eu-central-1'
+        BACKEND_ACCESS_KEY = credentials('dt_backend_access_key')
+        BACKEND_SECRET_KEY = credentials('dt_backend_secret_key')
+        DATABASE_URL = credentials('dt_database_url')
+        DATABASE_PASSWORD = credentials('dt_database_password')
+        WEBHOOK_URL = credentials('DiscordWebhookDT')
+        EC2_BACKEND_ID=credentials('EC2-backend-id')
+
+    }
+    stages {
+        stage('Start backend') {
+            agent { label 'master' }
+            steps {
+                script {
+                    def computer = Jenkins.getInstance().getComputer('Backend Server (Dev) (Debian)')
+                    if (computer.isOffline()) {
+                        sh('aws ec2 start-instances --instance-ids ${EC2_BACKEND_ID}')
+                    }
+                }
+            }
+        }
+        stage('Build') {
+            agent { label 'ecs-jdk' }
+            steps {
+                git branch: 'dev', url: 'https://github.com/ProvedCode/backend.git'
+                sh '''
+                    java --version
+
+                    rm -f .env
+                    export JAVA_HOME="/opt/java/openjdk"
+
+                    export DB_LOGIN="dt"
+                    export DB_PASSWORD=${DATABASE_PASSWORD}
+                    export DB_URL=${DATABASE_URL}
+
+                    export BUCKET="dmytro-team-backend"
+                    export S3_ACCESS_KEY=${BACKEND_ACCESS_KEY}
+                    export S3_SECRET_KEY=${BACKEND_SECRET_KEY}
+                    export S3_REGION=${REGION}
+
+                    export SPRING_PROFILES_ACTIVE=prod
+
+                    chmod 744 ./mvnw
+                    ./mvnw clean package
+                    mv ./target/demo*.jar ./demo.jar
+                '''
+                stash name: 'jar', includes: '*.jar'
+            }
+        }
+        stage('Deploy') {
+            agent { label 'java && target && dev' }
+            steps {
+                unstash 'jar'
+                sh '''
+                    sudo systemctl stop provedcode || true
+                    chmod 755 ./backend/install-systemd-service.sh
+                    ./backend/install-systemd-service.sh
+                    mv -f ./demo.jar ~/demo.jar
+                    sudo systemctl enable provedcode --now
+                    rm -rf ./*
+                '''
+            }
+        }
+    }
+    post {
+        always {
+            discordSend description: "Status: `${currentBuild.currentResult}`\nBuild log: ${BUILD_URL}consoleText",
+                link: env.BUILD_URL,
+                result: currentBuild.currentResult,
+                title: JOB_NAME,
+                webhookURL: "${env.WEBHOOK_URL}"
+
+            script {
+                node(label: 'master') {
+                    def computer = Jenkins.getInstance().getComputer('Backend Server (Dev) (Debian)')
+                    if (computer.isOnline()) {
+                        def timeZone = TimeZone.getTimeZone("Europe/Kiev")
+                        def time = new Date().format("HH:mm", timezone=timeZone)
+                        echo(time)
+                        
+                        if (time >= "23:00" || time < "11:00") {
+                            sh('aws ec2 stop-instances --instance-ids ${EC2_BACKEND_ID}')
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
