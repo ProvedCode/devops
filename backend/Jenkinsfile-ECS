@@ -3,12 +3,14 @@ pipeline {
     environment {
         SERVER_CREDENTIALS = 's3-access'
         BUCKET = 'dmytro-team-bucket'
+        
         REGION = 'eu-central-1'
         BACKEND_ACCESS_KEY = credentials('dt_backend_access_key')
         BACKEND_SECRET_KEY = credentials('dt_backend_secret_key')
         DATABASE_URL = credentials('dt_database_url')
         DATABASE_PASSWORD = credentials('dt_database_password')
         WEBHOOK_URL = credentials('DiscordWebhookDT')
+
         EC2_BACKEND_ID=credentials('EC2-backend-id')
 
     }
