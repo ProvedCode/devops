@@ -21,13 +21,13 @@ pipeline {
                 script {
                     def computer = Jenkins.getInstance().getComputer('Frontend Server (Main and Dev) (Debian)')
                     def retryCount = 5
-                    while (retryCount) {
+                    while (retryCount > 0) {
                         try {
                             if (computer.isOffline()) {
                                 sh('aws ec2 start-instances --instance-ids ${EC2_BACKEND_ID}')
                                 sh('aws ec2 start-instances --instance-ids ${EC2_FRONTEND_ID}')
+                                break
                             }
-                            break
                         } catch (err) { 
                             echo("${err}")
                             sleep(time: 10)
