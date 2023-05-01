@@ -46,7 +46,7 @@ pipeline {
                 export S3_SECRET_KEY=${FRONTEND_SECRET_KEY}
                 export S3_REGION=${REGION}
 
-                npm install --omit=production
+                npm install
                 npm run build
                 chmod -R 755 ./build/*
                 tar -cvzf ./html.tar.gz -C ./build .
