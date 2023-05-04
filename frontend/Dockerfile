@@ -6,4 +6,4 @@ RUN apk --no-cache add git
 RUN git clone https://github.com/Team-Olya/frontend.git -b dev
 WORKDIR /build/frontend
 RUN npm install
-RUN npm run build
+CMD [ "npm", "run build" ]
