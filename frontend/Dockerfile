@@ -8,4 +8,4 @@ WORKDIR /build/frontend
 RUN npm install
 RUN npm run build
 RUN mkdir team-olya
-RUN cp ./target/* ./team-olya/
+RUN cp ./build/* ./team-olya/

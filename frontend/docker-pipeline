@@ -4,9 +4,9 @@ pipeline {
         stage('Build') {
             agent { label 'docker' }
             steps {
+                git branch: 'dev', url: 'https://github.com/ProvedCode/devops.git'
                 sh '''
-                    wget https://raw.githubusercontent.com/ProvedCode/devops/dev/frontend/Dockerfile
-                    docker build -t team-olya .
+                    docker build -t team-olya ./frontend/Dockerfile
                     docker create --name team-olya team-olya-builder
                 '''
             }
