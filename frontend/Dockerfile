@@ -7,3 +7,5 @@ RUN git clone https://github.com/Team-Olya/frontend.git -b dev
 WORKDIR /build/frontend
 RUN npm install
 RUN npm run build
+RUN mkdir team-olya
+RUN cp ./target/* ./team-olya/
