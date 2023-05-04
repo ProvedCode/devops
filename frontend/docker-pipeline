@@ -5,10 +5,7 @@ pipeline {
             agent { label 'docker' }
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/devops.git'
-                sh '''
-                    docker build --no-cache -t team-olya ./frontend/
-                    docker run --name team-olya-builder -v /usr/share/nginx/team-olya:/build/frontend/build team-olya
-                '''
+                sh 'docker build --no-cache -t team-olya ./frontend/'
             }
         }
         stage('Build and deploy frontend') {
