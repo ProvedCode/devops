@@ -1,0 +1,10 @@
+pipeline {
+    agent { label 'docker' }
+    stages {
+        stage('Build') {
+            steps {
+                docker create --name builder
+            }
+        }
+    }
+}
