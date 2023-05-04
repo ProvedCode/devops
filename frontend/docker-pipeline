@@ -6,7 +6,7 @@ pipeline {
             steps {
                 git branch: 'dev', url: 'https://github.com/ProvedCode/devops.git'
                 sh '''
-                    docker build -t team-olya ./frontend/
+                    docker build --no-cache -t team-olya ./frontend/
                     docker create --name team-olya team-olya-builder
                 '''
             }
