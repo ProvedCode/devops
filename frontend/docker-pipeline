@@ -1,9 +1,22 @@
 pipeline {
-    agent { label 'docker' }
+    agent none
     stages {
         stage('Build') {
+            agent { label 'docker' }
             steps {
-                docker create --name builder
+                sh '''
+                    docker build -t team-olya .
+                    docker create --name team-olya team-olya-builder
+                '''
+            }
+        }
+        stage('Deploy') {
+            agent { label 'docker' }
+            steps {
+                sh '''
+                    docker cp team-olya-builder:/build/frontend/team-olya /usr/share/nginx/
+                    docker rm -f team-olya-builder
+                '''
             }
         }
     }
