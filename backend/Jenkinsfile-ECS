@@ -11,6 +11,9 @@ pipeline {
         DATABASE_PASSWORD = credentials('dt_database_password')
         WEBHOOK_URL = credentials('DiscordWebhookDT')
 
+        MAIL_USER=credentials('mail_user_dt')
+        EMAIL_PASSWORD=credentials('mail_password_dt')
+
         EC2_FRONTEND_ID=credentials('EC2-frontend-id')
         EC2_BACKEND_ID=credentials('EC2-backend-id')
     }
@@ -57,6 +60,9 @@ pipeline {
                     export S3_REGION=${REGION}
 
                     export SPRING_PROFILES_ACTIVE=prod
+
+                    export MAIL_USER=${EMAIL_USER}
+                    export MAIL_PASSWORD=${EMAIL_PASSWORD}
 
                     chmod 744 ./mvnw
                     ./mvnw clean package
