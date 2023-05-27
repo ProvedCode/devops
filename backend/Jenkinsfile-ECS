@@ -11,7 +11,7 @@ pipeline {
         DATABASE_PASSWORD = credentials('dt_database_password')
         WEBHOOK_URL = credentials('DiscordWebhookDT')
 
-        MAIL_USER=credentials('mail_user_dt')
+        EMAIL_USER=credentials('mail_user_dt')
         EMAIL_PASSWORD=credentials('mail_password_dt')
 
         EC2_FRONTEND_ID=credentials('EC2-frontend-id')
